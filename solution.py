@@ -7,7 +7,7 @@ Usage: Two arguments are expected: training dataset and test dataset
 
             python solution.py puzzle_train_dataset.csv puzzle_test_dataset.csv
 
-       A .csv output file is generated
+       An output file in .cvs format is generated
 """
 
 import sys
@@ -62,11 +62,9 @@ if __name__ == "__main__":
     train_data, test_data = sys.argv[1], sys.argv[2]
 
     df = get_data(train_data)
-
     df.dropna(axis=0, how='any', subset=['default'], inplace=True)
 
     income_threshold = 300000
-
     features = ['default',
                 'amount_borrowed',
                 'borrowed_in_months',
@@ -75,19 +73,15 @@ if __name__ == "__main__":
                 'delta_loan']
 
     X = feat_engineering(df, income_threshold, features)
-
     X, y = feat_tidying(X)
 
     model = RandomForestClassifier(max_depth=10, random_state=1);
-
     model.fit(X, y);
     
     df = get_data(test_data)
 
     prediction = model_prediction(df, income_threshold, model, features[1:])
-
     outliers = handle_outliers(df, income_threshold)
-
     miss_income = handle_miss_income(df)
 
     write_csv(prediction, outliers, miss_income, 'predictions.csv')
