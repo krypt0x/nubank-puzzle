@@ -13,7 +13,6 @@ Usage: Two arguments are expected: training dataset and test dataset
 import sys
 import numpy as np
 import pandas as pd
-
 from sklearn.ensemble import RandomForestClassifier
 
 def get_data(file_name):
@@ -37,17 +36,17 @@ def feat_tidying(X):
 
 def model_prediction(df, income_threshold, model, features):
     X = feat_engineering(df, income_threshold, ['ids'] + features)
-    X['default'] = model.predict( X.iloc[:,1:] )
-    return X.loc[:,['ids','default']]
+    X['predictions'] = model.predict( X.iloc[:,1:] )
+    return X.loc[:,['ids','predictions']]
 
 def handle_outliers(df, income_threshold):
     outliers = df.loc[ df.income>income_threshold , ['ids'] ]
-    outliers['default'] = np.zeros(outliers.shape[0], dtype=bool)
+    outliers['predictions'] = np.zeros(outliers.shape[0], dtype=bool)
     return outliers
 
 def handle_miss_income(df):
     miss_income = df.loc[ df.income.isnull() , ['ids'] ]
-    miss_income['default'] = np.zeros(miss_income.shape[0], dtype=bool)
+    miss_income['predictions'] = np.zeros(miss_income.shape[0], dtype=bool)
     return miss_income
 
 def write_csv(prediction, outliers, miss_income, out_file):
